@@ -159,6 +159,7 @@ version 2
 no auto-summary
 network 10.0.3.0
 network 172.16.21.0
+network 11.0.0.0
 
 interface gig0/0
 ip address 10.0.3.2 255.255.255.252
@@ -202,9 +203,42 @@ exit
 
 router ospf 1
 redistribute rip subnets
-end
+redistribute ospf 1
+redistribute ospf 1 metric 2
 
+
+end
 wr
+```
+
+### **R3**
+
+```bash
+interface GigabitEthernet0/0
+ip address 10.16.11.254 255.0.0.0
+
+exit
+interface GigabitEthernet0/0
+no shutdown
+
+
+interface GigabitEthernet0/1
+no ip address
+ip address 11.10.16.253 255.0.0.0
+no shutdown
+
+router ospf 1
+network 10.16.11.0 0.255.255.255 area 0
+network 11.10.16.0 0.255.255.255 area 0
+
+configure terminal
+ip routing
+
+router ospf 1
+router-id 4.4.4.4
+network 11.0.0.0 0.255.255.255 area 0
+exit
+
 ```
 
 ### **R4**
@@ -439,6 +473,8 @@ interface GigabitEthernet0/0
 no shutdown
 exit
 
+
+
 end
 write memory
 ```
@@ -614,6 +650,7 @@ no auto-summary
 network 10.0.1.0
 network 10.0.2.0
 network 10.0.3.0
+network 11.0.0.0
 
 interface fa0/1
 no switchport
@@ -631,6 +668,116 @@ ip address 10.0.3.1 255.255.255.252
 no shutdown
 end
 
+wr
+```
+
+### **MS4**
+
+```bash
+ena
+config t
+ip routing
+router ospf 1
+network 11.10.16.0 0.255.255.255 area 0
+network 12.10.16.0 0.0.0.255 area 0
+network 13.10.16.0 0.0.0.255 area 0
+
+vlan 16
+name VLAN16
+exit
+
+interface range fastEthernet 0/2 - 4
+switchport mode access
+switchport access vlan 16
+no shutdown
+exit
+
+show vlan brief
+show interfaces status
+show running-config interface range fastEthernet 0/2 - 4
+
+interface vlan 16
+ip address 12.10.16.1 255.0.0.0
+no shutdown
+exit
+
+router ospf 1
+network 12.10.16.0 0.255.255.255 area 0
+exit
+
+vlan 17
+name VLAN17
+exit
+
+interface range fastEthernet 0/5 - 7
+switchport mode access
+switchport access vlan 17
+no shutdown
+exit
+
+show vlan brief
+show interfaces status
+show running-config interface range fastEthernet 0/5 - 7
+
+interface vlan 17
+ip address 13.10.16.1 255.0.0.0
+no shutdown
+exit
+
+router ospf 1
+network 13.10.16.0 0.255.255.255 area 0
+exit
+
+configure terminal
+interface FastEthernet0/1
+no switchport
+ip address 11.10.16.254 255.0.0.0
+no shutdown
+exit
+
+interface FastEthernet0/5
+no switchport
+ip address 172.16.1.1 255.255.255.252
+no shutdown
+exit
+
+
+router ospf 1
+network 11.0.0.0 0.255.255.255 area 0
+network 172.16.1.0 0.0.0.3 area 0
+
+end
+wr
+```
+
+### **MS5**
+
+```bash
+configure terminal
+no router ospf 1
+configure terminal
+interface FastEthernet0/2
+no switchport
+ip address 172.16.1.2 255.255.255.252
+no shutdown
+exit
+router ospf 1
+router-id 5.5.5.5
+network 172.16.1.0 0.0.0.3 area 0
+
+configure terminal
+interface FastEthernet0/6
+no switchport
+ip address 172.16.2.2 255.255.255.252
+no shutdown
+exit
+
+router ospf 1
+network 172.16.2.0 0.0.0.3 area 0
+exit
+
+
+end
 wr
 ```
 
@@ -1033,86 +1180,6 @@ network 172.16.31.0 0.0.0.255 area 0
 network 172.16.22.0 0.0.0.255 area 0
 network 10.16.11.0 0.255.255.255 area 0
 
-```
-
-### **R3**
-
-```bash
-interface GigabitEthernet0/0
-ip address 10.16.11.254 255.0.0.0
-
-exit
-interface GigabitEthernet0/0
-no shutdown
-
-
-interface GigabitEthernet0/1
-no ip address
-ip address 11.10.16.253 255.0.0.0
-no shutdown
-
-router ospf 1
-network 10.16.11.0 0.255.255.255 area 0
-network 11.10.16.0 0.255.255.255 area 0
-
-```
-
-### **MS4**
-
-```bash
-ena
-config t
-ip routing
-router ospf 1
-network 11.10.16.0 0.255.255.255 area 0
-network 12.10.16.0 0.0.0.255 area 0
-network 13.10.16.0 0.0.0.255 area 0
-
-vlan 16
-name VLAN16
-exit
-
-interface range fastEthernet 0/2 - 4
-switchport mode access
-switchport access vlan 16
-no shutdown
-exit
-
-show vlan brief
-show interfaces status
-show running-config interface range fastEthernet 0/2 - 4
-
-interface vlan 16
-ip address 12.10.16.1 255.0.0.0
-no shutdown
-exit
-
-router ospf 1
-network 12.10.16.0 0.255.255.255 area 0
-exit
-
-vlan 17
-name VLAN17
-exit
-
-interface range fastEthernet 0/5 - 7
-switchport mode access
-switchport access vlan 17
-no shutdown
-exit
-
-show vlan brief
-show interfaces status
-show running-config interface range fastEthernet 0/5 - 7
-
-interface vlan 17
-ip address 13.10.16.1 255.0.0.0
-no shutdown
-exit
-
-router ospf 1
-network 13.10.16.0 0.255.255.255 area 0
-exit
 ```
 
 ### **MS6**
