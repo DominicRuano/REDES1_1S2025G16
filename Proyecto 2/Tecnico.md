@@ -29,23 +29,14 @@
 | Docentes    | 62           | 172.16.16.128 /26  | 255.255.255.192 | 172.16.16.129  | 172.16.16.190  | 172.16.16.191  |
 | Seguridad   | 6            | 172.16.16.192 /29  | 255.255.255.248 | 172.16.16.193  | 172.16.16.198  | 172.16.16.199  |
 
-### **VLSM CENTRAL** (sin terminar)
+### **VLSM CUM**
 
 | **Subred**  | **No.hosts** | **IP de red**      | **Mascara**     | **Primer**     | **Ultimo**     | **Broadcast**  |
 |-------------|--------------|--------------------|-----------------|----------------|----------------|----------------|
-|             |              |                    |                 |                |                |                |
-|             |              |                    |                 |                |                |                |
-|             |              |                    |                 |                |                |                |
-|             |              |                    |                 |                |                |                |
-
-### **VLSM CUM** (sin terminar)
-
-| **Subred**  | **No.hosts** | **IP de red**      | **Mascara**     | **Primer**     | **Ultimo**     | **Broadcast**  |
-|-------------|--------------|--------------------|-----------------|----------------|----------------|----------------|
-|             |              |                    |                 |                |                |                |
-|             |              |                    |                 |                |                |                |
-|             |              |                    |                 |                |                |                |
-|             |              |                    |                 |                |                |                |
+| Biblioteca  | 126          | 192.158.16.0 /25   | 255.255.255.128 | 192.158.16.1   | 192.158.16.126 | 192.158.16.127 |
+| Estudiantes | 62           | 192.158.16.128 /26 | 255.255.255.192 | 192.158.16.129 | 192.158.16.190 | 192.158.16.191 |
+| Docentes    | 30           | 192.158.16.192 /27 | 255.255.255.224 | 192.158.16.193 | 192.158.16.222 | 192.158.16.223 |
+| Seguridad   | 14           | 192.158.16.224 /28 | 255.255.255.240 | 192.158.16.225 | 192.158.16.238 | 192.158.16.239 |
 
 ## **. Tabla de Direcciones IP** (sin terminar)
 
@@ -53,26 +44,29 @@
 |----------|-----------------|--------------------|----------------------|
 |  11      | Estudiante 7    | 192.168.16.136 /26 | 192.168.16.129       |
 |  11      | Estudiante 6    | 192.168.16.135 /26 | 192.168.16.129       |
-|  11      | Estudiante 5    |                    |                      |
-|  11      | Estudiante 4    |                    |                      |
+|  11      | Estudiante 5    | 192.158.16.130 /26 | 192.158.16.129       |
+|  11      | Estudiante 4    | ??                 |                      |
 |  11      | Estudiante 3    | 192.168.16.132 /26 | 192.168.16.129       |
 |  11      | Estudiante 2    | 172.16.16.67 /26   | 172.16.16.65         |
 |  11      | Estudiante 1    | 172.16.16.66 /26   | 172.16.16.65         |
 |  21      | Docente 7       | 192.168.16.200 /27 | 192.168.16.193       |
 |  21      | Docente 6       | 192.168.16.199 /27 | 192.168.16.193       |
-|  21      | Docente 5       |                    |                      |
-|  21      | Docente 4       |                    |                      |
+|  21      | Docente 5       | 192.158.16.194 /27 | 192.158.16.193       |
+|  21      | Docente 4       | ??                 |                      |
 |  21      | Docente 3       | 192.168.16.196 /27 | 192.168.16.193       |
 |  21      | Docente 2       | 172.16.16.131 /26  | 172.16.16.129        |
 |  21      | Docente 1       | 172.16.16.130 /26  | 172.16.16.129        |
 |  21      | Seguridad 4     | 172.16.16.194 /29  | 172.16.16.193        |
 |  31      | Seguridad 3     | 192.168.16.228 /28 | 192.168.16.225       |
 |  31      | Seguridad 2     | 192.168.16.227 /29 | 192.168.16.225       |
-|  31      | Seguridad 1     |                    |                      |
+|  31      | Seguridad 1     | 192.158.16.226 /28 | 192.158.16.225       |
 |  41      | Biblioteca 4    | 192.168.16.5 /25   | 192.168.16.1         |
 |  41      | Biblioteca 3    | 192.168.16.4 /25   | 192.168.16.1         |
-|  41      | Biblioteca 2    |                    |                      |
+|  41      | Biblioteca 2    | 192.158.16.2 /25   | 192.158.16.1         |
 |  41      | Biblioteca 1    | 192.168.16.2 /25   | 192.168.16.1         |
+|  41      | Servidor 0      | 192.120.16.11/25   | 192.120.16.1         |
+|  41      | Servidor 1      | 192.121.16.11/25   | 192.121.16.1         |
+|  41      | Servidor 2      | 192.122.16.11/25   | 192.122.16.1         |
 
 ## **. Capturas de la implementación de las topologías**
 
@@ -211,6 +205,242 @@ redistribute rip subnets
 end
 
 wr
+```
+
+### **R4**
+
+```bash
+ena
+config t
+hostname R4
+
+interface GigabitEthernet0/1.41
+encapsulation dot1q 41
+ip address 192.158.16.126 255.255.255.128
+standby 41 ip 192.158.16.1
+standby 41 priority 110
+standby 41 preempt
+no shutdown
+exit
+
+interface GigabitEthernet0/1.11
+encapsulation dot1q 11
+ip address 192.158.16.190 255.255.255.192
+standby 11 ip 192.158.16.129
+standby 11 priority 110
+standby 11 preempt
+no shutdown
+exit
+
+interface GigabitEthernet0/1.21
+encapsulation dot1q 21
+ip address 192.158.16.222 255.255.255.224
+standby 21 ip 192.158.16.193
+standby 21 priority 110
+standby 21 preempt
+no shutdown
+exit
+
+interface GigabitEthernet0/1.31
+encapsulation dot1q 31
+ip address 192.158.16.238 255.255.255.240
+standby 31 ip 192.158.16.225
+standby 31 priority 110
+standby 31 preempt
+no shutdown
+exit
+
+interface GigabitEthernet0/1
+no shutdown
+exit
+
+exit
+write memory
+```
+
+### **R4.old**
+
+```bash
+ena
+config t
+hostname R4
+
+int g0/0
+ip add 192.158.16.2 255.255.255.0
+no sh
+
+standby version 2
+standby 2 ip 192.158.16.1
+standby 2 priority 150
+standby 2 preempt
+exit
+
+
+interface GigabitEthernet0/1.41
+encapsulation dot1q 41
+ip address 192.158.16.4 255.255.255.128
+no shutdown
+exit
+
+interface GigabitEthernet0/1.11
+encapsulation dot1q 11
+ip address 192.158.16.129 255.255.255.192
+no shutdown
+exit
+
+interface GigabitEthernet0/1.21
+encapsulation dot1q 21
+ip address 192.158.16.193 255.255.255.224
+no shutdown
+exit
+
+interface GigabitEthernet0/1.31
+encapsulation dot1q 31
+ip address 192.158.16.225 255.255.255.240
+no shutdown
+exit
+
+interface GigabitEthernet0/1
+no shutdown
+exit
+
+exit
+write memory
+```
+
+### **R5**
+
+```bash
+ena
+config t
+hostname R5
+
+interface GigabitEthernet0/1.41
+encapsulation dot1q 41
+ip address 192.158.16.125 255.255.255.128
+standby 41 ip 192.158.16.1
+standby 41 priority 100
+standby 41 preempt
+no shutdown
+exit
+
+interface GigabitEthernet0/1.11
+encapsulation dot1q 11
+ip address 192.158.16.189 255.255.255.192
+standby 11 ip 192.158.16.129
+standby 11 priority 100
+standby 11 preempt
+no shutdown
+exit
+
+interface GigabitEthernet0/1.21
+encapsulation dot1q 21
+ip address 192.158.16.221 255.255.255.224
+standby 21 ip 192.158.16.193
+standby 21 priority 100
+standby 21 preempt
+no shutdown
+exit
+
+interface GigabitEthernet0/1.31
+encapsulation dot1q 31
+ip address 192.158.16.237 255.255.255.240
+standby 31 ip 192.158.16.225
+standby 31 priority 100
+standby 31 preempt
+no shutdown
+exit
+
+interface GigabitEthernet0/1
+no shutdown
+exit
+
+exit
+write memory
+```
+
+### **R5.old**
+
+```bash
+ena
+config t
+hostname R5
+
+int g0/0
+ip add 192.158.16.3 255.255.255.0
+no sh
+
+standby version 2
+standby 2 ip 192.158.16.1
+
+interface GigabitEthernet0/0.41
+encapsulation dot1q 41
+ip address 192.158.16.4 255.255.255.128
+no shutdown
+exit
+
+interface GigabitEthernet0/0.11
+encapsulation dot1q 11
+ip address 192.158.16.129 255.255.255.192
+no shutdown
+exit
+
+interface GigabitEthernet0/0.21
+encapsulation dot1q 21
+ip address 192.158.16.193 255.255.255.224
+no shutdown
+exit
+
+interface GigabitEthernet0/0.31
+encapsulation dot1q 31
+ip address 192.158.16.225 255.255.255.240
+no shutdown
+exit
+
+interface GigabitEthernet0/1
+no shutdown
+exit
+
+exit
+write memory
+
+```
+
+### **R7**
+
+```bash
+ena
+config t
+hostname R7
+
+interface GigabitEthernet0/1.51
+encapsulation dot1q 51
+ip address 192.120.16.1 255.255.255.0
+no shutdown
+exit
+
+interface GigabitEthernet0/1.61
+encapsulation dot1q 61
+ip address 192.121.16.1 255.255.255.0
+no shutdown
+exit
+
+interface GigabitEthernet0/1.71
+encapsulation dot1q 71
+ip address 192.122.16.1 255.255.255.0
+no shutdown
+exit
+
+interface GigabitEthernet0/1
+no shutdown
+exit
+
+interface GigabitEthernet0/0
+no shutdown
+exit
+
+end
+write memory
 ```
 
 ### **MS0**
@@ -444,6 +674,52 @@ exit
 wr
 ```
 
+### **Switch0**
+
+```bash
+ena
+config t
+hostname SW0
+
+vtp domain Grupo16
+vtp password usac2025
+vtp mode server
+vtp version 2
+exit
+
+configure terminal
+vlan 51
+name VLAN51
+exit
+vlan 61
+name VLAN61
+exit
+vlan 71
+name VLAN71
+exit
+
+interface fastEthernet 0/1 
+switchport mode trunk
+switchport trunk allowed vlan all
+no shutdown
+exit
+
+interface fastEthernet 0/2  
+switchport mode access
+switchport access vlan 71
+
+interface fastEthernet 0/3  
+switchport mode access
+switchport access vlan 51
+
+interface fastEthernet 0/4  
+switchport mode access
+switchport access vlan 61
+
+end
+write memory
+```
+
 ### **SW0**
 
 ```bash
@@ -579,6 +855,57 @@ exit
 wr
 ```
 
+### **SW5**
+
+```bash
+ena
+config t
+hostname SW5
+
+vtp domain Grupo16
+vtp password usac2025
+vtp mode server
+exit
+
+configure terminal
+vlan 11
+name Estudiantes
+exit
+vlan 21
+name Docentes
+exit
+vlan 31
+name Seguridad
+exit
+vlan 41
+name Biblioteca
+exit
+
+interface fastEthernet 0/14  
+switchport mode access
+switchport access vlan 11
+
+interface fastEthernet 0/13  
+switchport mode access
+switchport access vlan 21
+
+interface fastEthernet 0/12  
+switchport mode access
+switchport access vlan 31
+
+interface fastEthernet 0/11  
+switchport mode access
+switchport access vlan 41
+
+
+interface range fastEthernet 0/1-1 
+switchport mode trunk
+switchport trunk
+
+end
+write memory
+```
+
 ### **SW6**
 
 ```bash
@@ -691,238 +1018,7 @@ end
 wr
 ```
 
-### **R7**
-
-```bash
-ena
-config t
-hostname R7
-
-interface GigabitEthernet0/0.51
-encapsulation dot1q 51
-ip address 192.120.16.51 255.255.255.0
-no shutdown
-exit
-
-interface GigabitEthernet0/0.61
-encapsulation dot1q 61
-ip address 192.121.16.61 255.255.255.0
-no shutdown
-exit
-
-interface GigabitEthernet0/0.71
-encapsulation dot1q 71
-ip address 192.122.16.71 255.255.255.0
-no shutdown
-exit
-
-interface GigabitEthernet0/0
-no shutdown
-exit
-
-exit
-write memory
-
-```
-### **SW0**
-
-```bash
-ena
-config t
-hostname SW0
-
-vtp domain Grupo16
-vtp password usac2025
-vtp mode transparent
-exit
-
-configure terminal
-vlan 51
-name VLAN51
-exit
-vlan 61
-name VLAN61
-exit
-vlan 71
-name VLAN71
-exit
-exit
-
-interface fastEthernet 0/1 
-switchport mode trunk
-switchport trunk allowed vlan 51,61,71
-exit
-
-interface fastEthernet 0/2  
-switchport mode access
-switchport access vlan 71
-
-interface fastEthernet 0/3  
-switchport mode access
-switchport access vlan 51
-
-interface fastEthernet 0/4  
-switchport mode access
-switchport access vlan 61
-
-exit
-write memory
-
-
-```
-
-### **R4**
-
-```bash
-ena
-config t
-hostname R4
-
-int g0/0
-ip add 192.158.16.2 255.255.255.0
-no sh
-
-standby version 2
-standby 2 ip 192.158.16.1
-standby 2 priority 150
-standby 2 preempt
-exit
-
-
-interface GigabitEthernet0/0.41
-encapsulation dot1q 41
-ip address 192.158.16.4 255.255.255.128
-no shutdown
-exit
-
-interface GigabitEthernet0/0.11
-encapsulation dot1q 11
-ip address 192.158.16.129 255.255.255.192
-no shutdown
-exit
-
-interface GigabitEthernet0/0.21
-encapsulation dot1q 21
-ip address 192.158.16.193 255.255.255.224
-no shutdown
-exit
-
-interface GigabitEthernet0/0.31
-encapsulation dot1q 31
-ip address 192.158.16.225 255.255.255.240
-no shutdown
-exit
-
-interface GigabitEthernet0/1
-no shutdown
-exit
-
-exit
-write memory
-```
-### **R5**
-
-```bash
-ena
-config t
-hostname R5
-
-int g0/0
-ip add 192.158.16.3 255.255.255.0
-no sh
-
-standby version 2
-standby 2 ip 192.158.16.1
-
-interface GigabitEthernet0/0.41
-encapsulation dot1q 41
-ip address 192.158.16.4 255.255.255.128
-no shutdown
-exit
-
-interface GigabitEthernet0/0.11
-encapsulation dot1q 11
-ip address 192.158.16.129 255.255.255.192
-no shutdown
-exit
-
-interface GigabitEthernet0/0.21
-encapsulation dot1q 21
-ip address 192.158.16.193 255.255.255.224
-no shutdown
-exit
-
-interface GigabitEthernet0/0.31
-encapsulation dot1q 31
-ip address 192.158.16.225 255.255.255.240
-no shutdown
-exit
-
-interface GigabitEthernet0/1
-no shutdown
-exit
-
-exit
-write memory
-
-```
-
-### **SW5**
-
-```bash
-ena
-config t
-hostname SW5
-
-vtp domain Grupo16
-vtp password usac2025
-vtp mode transparent
-exit
-
-configure terminal
-vlan 11
-name VLAN11
-exit
-vlan 21
-name VLAN21
-exit
-vlan 31
-name VLAN31
-exit
-vlan 41
-name VLAN41
-exit
-
-interface fastEthernet 0/14  
-switchport mode access
-switchport access vlan 11
-
-interface fastEthernet 0/13  
-switchport mode access
-switchport access vlan 21
-
-interface fastEthernet 0/12  
-switchport mode access
-switchport access vlan 31
-
-interface fastEthernet 0/11  
-switchport mode access
-switchport access vlan 41
-
-
-interface fastEthernet 0/1 
-switchport mode trunk
-switchport trunk allowed vlan 11,21,31,41
-interface fastEthernet 0/2 
-switchport mode trunk
-switchport trunk allowed vlan 11,21,31,41
-
-exit
-exit
-write memory
-
-```
-### **R2 modificacion **
+### **R2 modificacion**
 
 ```bash
 interface GigabitEthernet0/0
